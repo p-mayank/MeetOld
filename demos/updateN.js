@@ -32,6 +32,7 @@ function addToConversation(senderId, msgType, content) {
     // Escape html special characters, then add linefeeds.
     content = content.replace(/&/g,"&amp;");
     content = content.replace(/\n/g, "<br />");
+    content = content.replace(/&nbsp;/gi,'');
     var name=""
     
     
@@ -277,7 +278,10 @@ function convertListToButtons (roomName, data, isPrimary) {
 function sendStuffWS(otherEasyrtcid) {
     //Sending data to other peer
     var text = $('#sendMessageText').html();
-    if(text.replace(/\s/g, "").length === 0) { // Don't send just whitespace
+    var test = text.replace(/&/g,'&amp;');
+    test = test.replace(/\n/g, '<br />');
+    test = test.replace(/&amp;nbsp;/gi,'');
+    if(test.length === 0) { // Don't send just whitespace
         return;
     }
     easyrtc.sendDataWS(otherEasyrtcid, "message",  text);
@@ -285,6 +289,7 @@ function sendStuffWS(otherEasyrtcid) {
     //Reflecting changes in message history
     text = text.replace(/&/g,'&amp;');
     text = text.replace(/\n/g, '<br />');
+    text = text.replace(/&amp;nbsp;/gi,'');
     for(var i = 0; i < msgHist.length; i++) {
         if(convoListIds[i] == otherEasyrtcid) {
           break;
