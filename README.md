@@ -1,8 +1,5 @@
 ![EasyRTC](./api/img/easyrtc.png "EasyRTC")
-
-
-EasyRTC
-=======
+[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/p-mayank/Meet/blob/master/LICENSE)
 
 Installation In A Nutshell
 --------------------------
@@ -16,4 +13,4 @@ Installation In A Nutshell
 
 Important note: Chrome will not grant access to local microphones or cameras for a page served using http except for the localhost case.
 
-[![MIT license](http://img.shields.io/badge/license-MIT-brightgreen.svg)](https://github.com/p-mayank/Meet/blob/master/LICENSE)
+
