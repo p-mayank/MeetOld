@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+  	 <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Meet</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href="vendor/font-awesome/css/font-awe.min.css" rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+	    <!-- Assumes global locations for socket.io.js and easyrtc.js -->
+	    <script src="/socket.io/socket.io.js"></script>
+	    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+	    <script type="text/javascript" src="updateN.js"></script>
+	    <script type="text/javascript" src="js/w3.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script type="text/javascript">
+    function replaceContentInContainer(target, source) {
+    	var username = document.getElementById("userNameField").value;
+	  if (username) {
+	    easyrtc.setUsername(username);
+	  }
+        document.getElementByClassName('bk').style.backgroundImage="none";
+        alert(document.body.style.backgroundImage);
+	   	document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
+        easyrtc.enableDataChannels(true);
+	  //easyrtc.setVideoDims(640,480);
+	  easyrtc.setRoomOccupantListener(convertListToButtons);
+      easyrtc.connect("easyrtc.audioVideo", loginSuccess, loginFailure);
+	  //easyrtc.easyApp("easyrtc.audioVideoSimple", "selfVideo", ["callerVideo"], loginSuccess, loginFailure);
+      if( onceOnly ) {
+    easyrtc.getAudioSinkList( function(list) {
+     for(let ele of list ) {
+       addSinkButton(ele.label, ele.deviceId);
+     }
+    });
+    onceOnly = false;
+  }
+	  easyrtc.setPeerListener(addToConversation);
+	    easyrtc.connect("easyrtc.instantMessaging", loginSuccess, loginFailure);
+    }
+    function replaceContentInOtherContainer(replace_target, source){
+        document.getElementById(replace_target).style.display = "none";
+        document.getElementById(source).style.display = "block";
+    }
+
+    
+</script>
+	    <style type="text/css">
+            body{
+                background-image: url('bg.png');
+                background-position:center;
+                background-repeat:no-repeat;
+                background-size:cover;
+            }
+	    	#demoContainer {
+			    width: 100%;
+			    position:relative;
+			    display: table;
+			    text-align: center;
+                box-shadow: 0px 0px 10px 0px black;
+			}
+			#connectControls {
+			    margin-left: 35%;
+			    margin-right: 35%;
+			    width:30%;
+			    text-align:center;
+			}
+			#otherClients {
+			    overflow-y:scroll;
+			}
+			#callerVideo {
+                height: 30%;
+                background-color: white;
+                z-index: 1;
+                position: fixed;
+                right: 0; top: 80px;
+                border:0px;
+			}
+
+			#selfVideo {
+			    width:15%;
+			    height: 15%;
+                background-color: white;
+                z-index: 2;
+                position: fixed;
+                right: 0; bottom: 120px;
+                border:0px;
+                display: none;
+			}
+	    	.conversation {
+			    border:solid 1px gray;
+			    overflow-y:scroll;
+			    word-wrap: break-word;
+			    margin: 2px;
+			    width: 100%;
+			    height: 80%;
+			}
+
+            .sendbutton {
+                border-radius: 10px;
+                background-color: #F05F40;
+                width: 100%;
+                height: 20%;
+            }
+
+            .convcontainer{
+                margin: 1.66%;
+                float: left;
+                width: 30%;
+                height: 300px;
+            }
+            .UsersActive {
+                font-size: 20px;
+                width: 100%;
+                font-size: 20px;
+                border: 0px;
+                transition: all .2s ease-in-out;
+                text-transform: capitalize;
+            }
+
+            .UserActive:hover, .UserActive:focus {
+                background-color: rgba(255, 104, 0, 0.9);
+            }
+
+            .activechat{
+                color: green;
+            }
+            #iam {
+                font-family: Century Gothic;
+                font-size: 25px;
+                padding: 20px;
+                color: white;
+                text-transform: capitalize;
+                font-style: normal;
+            }
+            #me {
+                margin-top:  -8px;
+                background-color: grey;
+                box-shadow: outset 0px 0px 5px 0px black;
+            }
+            .easyrtcErrorDialog_title {
+                display: none;
+            }
+            #easyrtcErrorDialog_body{
+                display: none;
+            }
+            .circle {
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              font-size: 20px;
+              color: #fff;
+              line-height: 50px;
+              text-align: center;
+              background: #000
+            }
+
+            #msg{
+                padding: 10px;
+                border-radius: 10px;
+                
+                }
+
+            #CallButton{
+                color:grey;
+            }
+
+            #CallButton:hover{
+                color:black;
+            }
+
+            .sidenav a{
+                font-size: 15px;
+                padding-bottom: 15px;
+                padding-top: 15px;
+            }
+
+            .sidenav a:hover, .offcanvas a:focus{
+                color: #f1f1f1;
+                background-color: rgba(255, 104, 0, 0.9);
+            }
+            .blinking-cursor {
+              font-weight: 80;
+              font-size: 18px;
+              color: #f05f40;
+              -webkit-animation: 0.7s blink step-end infinite;
+              animation: 0.7s blink step-end infinite;
+            }
+
+            @keyframes "blink" {
+              from, to {
+                color: transparent;
+              }
+              50% {
+                    color: #f05f40;
+              }
+            }
+
+
+            @-webkit-keyframes "blink" {
+              from, to {
+                color: transparent;
+              }
+              50% {
+                    color: #f05f40;
+              }
+            }
+
+
+	    </style>
+	</head>
+	<body id="page-top" class="bk" style="z-index: 0;    background-color: gainsboro;" >
+    <nav class="navbar navbar-default" style="background-color: transparent;border-color: transparent;">
+    <div class="navbar-header" style="background-color: transparent;">
+    <a class="navbar-brand" href="#" style="background-color: rgba(255, 104, 0, 0.9);"><img src="meet-04.png" width="60px" height="20px"></a>
+    <a href="#" id="CallButton1"><span class="glyphicon glyphicon-facetime-video" id="phone" style="
+    font-size: 35px;
+    z-index: 100000;
+    float: right;padding-right: 10px;top:17px;
+"></span></a>
+    </div>
+    </nav>
+        <center style="transform: translateY(100px);">
+		<div class="header-content" id="target">
+		  <img src="meet-04.png" height="100px" width="300px"><br><br><br><br><br>
+          		  <div class="header-content-inner">
+            <!--<h1 id="homeHeading" class="text-faded">Enter Your Name</h1>-->
+            <hr>
+			<input type="text" style="width: 30%" id="userNameField" placeholder="Name" class = "form-control" onkeydown="if( event.keyCode == 13) connect();" autofocus></input>
+			<br>
+            <button class="btn btn-primary btn-xl page-scroll" onclick="connect();">Begin Session</button>
+          </div>
+        </div>
+        </center>
+        <div id="vc" style="display: none;">
+
+
+        </div>
+        <div id="tc" style="display: none;">
+        <nav id="mainNav" class="navbar navbar-default navbar-fixed-top" style="margin-bottom: 0;border:none;">
+
+            <div class="navbar-header" style="background-color: transparent;width: 20%">
+    <a class="navbar-brand" href="#" style="background-color: rgba(255, 104, 0, 0.9);height: 50%;
+    width: 100%;
+    padding-left: 28%;"><img src="meet-04.png" width="120px" height="40px"></a>
+    
+    </div>
+            <div class="container-fluid">
+			<div>
+                    <ul class="nav navbar-nav">
+                     <li style="    padding: 10px;
+    padding-left: 50px;display: inline-block;">
+                            <div class="circle" id="circleselect" style="text-transform: capitalize;display: none;">NM</div>
+
+                        </li>
+                        <li style="padding-top: 20px;font-size: 20px;" id="select" style="text-transform: capitalize;"></li>
+                </ul>
+                </div>
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <!--<div class="navbar-header" >
+                <!--<button id="m" type="button" style="align-self: left" class="navbar-toggle  " data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1">
+                <!--<img src="navbarlogoblack.png" alt="Mountain View" style="width:70px;height:20px" >
+                <!--</button>
+                    <button id="main" type="button" class="navbar-toggle collapsed" data-toggle="collapse" onmouseover="openNav();" onclick="closeNav();"" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only" ">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button> -->
+                <!--</div>
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <!-- <a style="float:right;" class="page-scroll" href="combineN.html"><img src="navbarlogo.png" alt="Meet" class="logo" ></a>
+                  <p style="float:center;" id="conversationName"></p> -->
+<!-- >>>>>>> 3f5e3be79a99c37d6a7a5c2c6e790fe178ef0a23 -->
+
+                  <!--<ul class="nav navbar-nav">
+                     <li><span id="conversationName"></span></li>
+                  </ul>
+                  <!--
+                    <ul class="nav navbar-nav navbar-right">
+                       <li>
+                          <a class="page-scroll" href="combineN.html"><img src="navbarlogo.png" alt="Meet" class="logo" ></a>
+                      </li>
+                    </ul>-->
+                    <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="CallButton"><span class="glyphicon glyphicon-facetime-video" style="    padding: 30px;
+    font-size: 30px;
+    padding-bottom: 0;
+    padding-top: 5px;"></span></a></li>
+                    </ul>
+                </div>
+
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <div id="mySidenav" class="sidenav" style="border-right-color: #333333;
+    border-right-style: solid;
+    border-right-width: thin;
+    background: #333333;
+    top: 9%;
+    box-shadow: none;
+    padding-top: 7px;">
+        <div id="me" style="background-color: #333333;">
+                <center style="padding-top: 5px;" ><br>
+                <i id="iam">Not yet connected...</i><button id="hangupButton" class="btn btn-primary" disabled="disabled" onclick="hangup()" style="margin-bottom: 7px;display: none;">Hangup</button></center>
+                </div></br>
+                
+                <div id="otherClientsVid">
+                <div class="UsersActive"></div>
+                </div>
+                <!--<button id="hangupButton" class="btn btn-primary" style="    position: absolute;
+    bottom: 120px;
+    margin-left: 80px;" disabled="disabled" onclick="hangup()">Hangup</button>-->
+            </div>
+        <div id="sendMessageArea" style="position: fixed; z-index: 0;" onload="connectnew();">
+            <div class="Messages" style="position: fixed; bottom: 80px; background-color: gainsboro; width: 80%; right:0; height: auto; max-height: 80%;overflow-y: scroll; word-wrap: break-word; padding: 20px; padding-bottom: 0px; z-index: 2;    color: #f05f40;font-size: 18px;">
+            <span id="text" style="overflow-y: hidden; "></span><span class="blinking-cursor" style="overflow-y: hidden;">|</span>
+            </div>
+
+          <textarea id="sendMessageText" onkeypress="if(event.keyCode == 13) { event.preventDefault();sendOnEnter();}" placeholder="Type in what to send" style="padding: 10px; z-index: 2;border: 0px; background:#fff;box-shadow: 8px 8px 8px 8px #F05F40; position: fixed;bottom: 0;height:80px;font-size:16px;width: 80%;right:0;"></textarea>
+          <button class="btn btn-primary btn-xl page-scroll" id="SendButton" style="right: 0; position: fixed; z-index: 4; bottom: 15px;">Send</button>
+          <!--<button class="btn btn-primary btn-xl page-scroll" id="CallButton" style="right: 0; position: fixed; z-index: 4; bottom: 0px;">Call</button>-->
+          <div id="otherClients" style="overflow-y:scroll;display: table; z-index: 0; position: relative; width: 100%;bottom: 150px;"></div>
+        </div>
+            <video autoplay="autoplay" class="easyrtcMirror" id="selfVideo" muted="muted" volume="0" >
+            </video>
+            <div id="Vid">
+            <video autoplay="autoplay" id="callerVideo" style="background-color:gainsboro;display: none;" controls="true">
+            </video>
+            
+            <!--<button class="btn btn-primary btn-xl page-scroll" id="CallButton2" style="right: 10px; position: fixed; z-index: 4; top: 60px; padding: 10px; height: 40px; width: 40px; background-color: red;display: none;" onclick="disconnect();">X</button -->
+
+            <!-- each caller video needs to be in it"s own div so it"s close button can be positioned correctly -->
+            </div>
+        </div>
+<!-- <<<<<<< HEAD -->
+
+        <div class="card" id="acceptCallBox" style="display: none; position: absolute; top: 50%; left: 50%; width: 20rem;">
+            
+            <div class="card-block" style="
+    background-color: #f05f40;
+    border-radius: 4px;
+    box-shadow: 10px 10px 5px #888888;
+">
+                <h4 class="card-title" style="
+    text-align: center;
+    background-color: white;
+">New Call</h4>
+                <p class="card-text"></p>
+                <div id="acceptCallLabel" style="padding-left: 8px;
+    padding-bottom: 8px;">Accept incoming call from Km ?</div>
+                    <button id="callAcceptButton" class="btn btn-default
+                                     " onclick="displaycancel();" style="
+    margin-left: 25px;
+">Accept</button> <button id="callRejectButton" class="btn btn-danger">Reject</button>
+
+
+        <!--<div id="acceptCallBox" style="display: none;position: absolute;top: 50%;left: 50%;">
+=======
+        <div id="acceptCallBox" style="display: none;position: absolute;top: 50%;left: 50%;">
+              <div id="acceptCallLabel"></div>
+              <button id="callAcceptButton" onclick="displaycancel();" >Accept</button> <button id="callRejectButton">Reject</button>
+            </div>-->
+    </body>
+</html>
+
+<!-- Brand and toggle get grouped for better mobile display -->
+                <!--
+                <div class="navbar-header" >
+                <button id="m" type="button" style="align-self: left" class="navbar-toggle  " data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1">
+                <img src="navbarlogoblack.png" alt="Mountain View" style="width:70px;height:20px" >
+                </button>
+                    <button id="main" type="button" class="navbar-toggle collapsed" data-toggle="collapse" onmouseover="openNav();" onclick="closeNav();"" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only" ">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+                 Collect the nav links, forms, and other content for toggling -->

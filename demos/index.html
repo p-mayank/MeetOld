@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+  	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="favicon.ico" type="image/gif" sizes="16x16">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Meet</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!--<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">-->
+    <!-- Custom Fonts -->
+    <!--<link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">-->
+    <!--<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>-->
+    <!--<link href="vendor/font-awesome/css/font-awe.min.css" rel='stylesheet' type='text/css'>-->
+
+    <!-- Plugin CSS -->
+    <!-- <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet"> -->
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+	    <!-- Assumes global locations for socket.io.js and easyrtc.js -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>   
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-resource.min.js"></script>
+    <script type="text/javascript" src="updateN.js"></script>
+    <script type="text/javascript" src="js/w3.js"></script>
+    <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!--<script src="js/jquery.min.js"></script>-->
+	  <style type="text/css">
+            body{
+                background-image: url('bg.png');
+                background-position:center;
+                background-repeat:no-repeat;
+                background-size:cover;
+            }
+	    	#demoContainer {
+			    width: 100%;
+			    position:relative;
+			    display: table;
+			    text-align: center;
+                box-shadow: 0px 0px 10px 0px black;
+			}
+			#connectControls {
+			    margin-left: 35%;
+			    margin-right: 35%;
+			    width:30%;
+			    text-align:center;
+			}
+			#otherClients {
+			    overflow-y:scroll;
+			}
+			#callerVideo {
+                height: 30%;
+                background-color: white;
+                z-index: 1;
+                position: fixed;
+                right: 0; top: 80px;
+                border:0px;
+			}
+
+			#selfVideo {
+			    width:15%;
+			    height: 15%;
+                background-color: white;
+                z-index: 2;
+                position: fixed;
+                right: 0; bottom: 120px;
+                border:0px;
+                display: none;
+			}
+	    	.conversation {
+			    border:solid 1px gray;
+			    overflow-y:scroll;
+			    word-wrap: break-word;
+			    margin: 2px;
+			    width: 100%;
+			    height: 80%;
+			}
+
+            .sendbutton {
+                border-radius: 10px;
+                background-color: #F05F40;
+                width: 100%;
+                height: 20%;
+            }
+
+            .convcontainer{
+                margin: 1.66%;
+                float: left;
+                width: 30%;
+                height: 300px;
+            }
+            .UsersActive {
+                font-size: 20px;
+                width: 100%;
+                font-size: 20px;
+                border: 0px;
+                transition: all .2s ease-in-out;
+                text-transform: capitalize;
+            }
+
+            .UserActive:hover, .UserActive:focus {
+                background-color: rgba(255, 104, 0, 0.9);
+            }
+
+            .activechat{
+                color: green;
+            }
+            #iam {
+                font-family: Century Gothic;
+                font-size: 25px;
+                padding: 20px;
+                color: white;
+                text-transform: capitalize;
+                font-style: normal;
+            }
+            #me {
+                margin-top:  -8px;
+                background-color: grey;
+                box-shadow: outset 0px 0px 5px 0px black;
+            }
+            .easyrtcErrorDialog_title {
+                display: none;
+            }
+            #easyrtcErrorDialog_body{
+                display: none;
+            }
+            .circle {
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              font-size: 20px;
+              color: #fff;
+              line-height: 50px;
+              text-align: center;
+              background: #000
+            }
+
+            #msg{
+                padding: 10px;
+                border-radius: 10px;
+
+                }
+
+            #CallButton{
+                color:grey;
+            }
+
+            #CallButton:hover{
+                color:black;
+            }
+
+            .sidenav a{
+                font-size: 15px;
+                padding-bottom: 15px;
+                padding-top: 15px;
+            }
+
+            .sidenav a:hover, .offcanvas a:focus{
+                color: #f1f1f1;
+                background-color: rgba(255, 104, 0, 0.9);
+            }
+            .blinking-cursor {
+              font-weight: 80;
+              font-size: 18px;
+              color: #f05f40;
+              -webkit-animation: 0.7s blink step-end infinite;
+              animation: 0.7s blink step-end infinite;
+            }
+
+            @keyframes "blink" {
+              from, to {
+                color: transparent;
+              }
+              50% {
+                    color: #f05f40;
+              }
+            }
+
+
+            @-webkit-keyframes "blink" {
+              from, to {
+                color: transparent;
+              }
+              50% {
+                    color: #f05f40;
+              }
+            }
+
+            #takentext{
+                display: none;
+                color: #f05f40;
+            }
+
+            #anguse{
+                color:white;
+            }
+
+
+
+	    </style>
+	</head>
+	<body id="page-top" class="bk" style="z-index: 0;    background-color: gainsboro;" onkeydown="checkSmiley(event);">
+    <nav class="navbar navbar-default" style="background-color: transparent;border-color: transparent;">
+    <div class="navbar-header" style="background-color: transparent;">
+    <a class="navbar-brand" href="#" style="background-color: rgba(255, 104, 0, 0.9);"><img src="meet-04.png" width="60px" height="20px"></a>
+    <a href="#" id="CallButton1"><span class="glyphicon glyphicon-facetime-video" id="phone" style="
+      font-size: 35px;
+      z-index: 100000;
+      float: right;padding-right: 10px;top:17px;
+    "></span></a>
+    </div>
+    </nav>
+        <center style="transform: translateY(100px);">
+		<div class="header-content" id="target">
+		  <img src="meet-04.png" height="100px" width="300px"><br><br><br><br><br>
+          		  <div class="header-content-inner">
+                  <h3 class="text-danger" id="takentext">The username is already taken.</h3>
+            <!--<h1 id="homeHeading" class="text-faded">Enter Your Name</h1>-->
+            <hr>
+			<input type="text" style="width: 30%" id="userNameField" placeholder="Name" class = "form-control" onkeydown="if( event.keyCode == 13) validate();" autofocus></input>
+			<br>
+            <button class="btn btn-primary btn-xl page-scroll" onclick="validate();">Begin Session</button>
+          </div>
+        </div>
+        </center>
+        <div id="vc" style="display: none;">
+
+
+        </div>
+        <div id="tc" style="display: none;">
+        <nav id="mainNav" class="navbar navbar-default navbar-fixed-top" style="margin-bottom: 0;border:none;">
+
+            <div class="navbar-header" style="background-color: transparent;width: 20%">
+    <a class="navbar-brand" href="#" style="background-color: rgba(255, 104, 0, 0.9);height: 50%;
+    width: 100%;"><center><img src="meet-04.png" width="120px" height="40px"></center></a>
+
+    </div>
+            <div class="container-fluid">
+			<div>
+                    <ul class="nav navbar-nav">
+                     <li style="    padding: 10px;
+    padding-left: 50px;display: inline-block;">
+                            <div class="circle" id="circleselectname" style="text-transform: capitalize;display: none;">NM</div>
+
+                        </li>
+                        <li style="padding-top: 20px;font-size: 20px;" id="select" style="text-transform: capitalize;"></li>
+                </ul>
+                </div>
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <!--<div class="navbar-header" -->
+                <!--<button id="m" type="button" style="align-self: left" class="navbar-toggle  " data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1" -->
+                <!--<img src="navbarlogoblack.png" alt="Mountain View" style="width:70px;height:20px" -->
+                <!--</button>
+                    <button id="main" type="button" class="navbar-toggle collapsed" data-toggle="collapse" onmouseover="openNav();" onclick="closeNav();"" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only" ">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button> -->
+                <!--</div> -->
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                  <!-- <a style="float:right;" class="page-scroll" href="combineN.html"><img src="navbarlogo.png" alt="Meet" class="logo" ></a>
+                  <p style="float:center;" id="conversationName"></p> -->
+<!-- >>>>>>> 3f5e3be79a99c37d6a7a5c2c6e790fe178ef0a23 -->
+
+                  <!--<ul class="nav navbar-nav">
+                     <li><span id="conversationName"></span></li>
+                  </ul> -->
+                  <!--
+                    <ul class="nav navbar-nav navbar-right">
+                       <li>
+                          <a class="page-scroll" href="combineN.html"><img src="navbarlogo.png" alt="Meet" class="logo" ></a>
+                      </li>
+                    </ul>-->
+                    <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" id="CallButton"><span class="glyphicon glyphicon-facetime-video" style="    padding: 30px;
+    font-size: 30px;
+    padding-bottom: 0;
+    padding-top: 5px;"></span></a></li>
+                    </ul>
+                </div>
+
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <div id="mySidenav" class="sidenav" style="border-right-color: #333333;
+    border-right-style: solid;
+    border-right-width: thin;
+    background: #333333;
+    top: 70px;
+    box-shadow: none;
+    padding-top: 7px;">
+        <div id="me" style="background-color: #333333;">
+                <center style="padding-top: 5px;" ><br>
+                <i id="iam">Not yet connected...</i><button id="hangupButton" class="btn btn-primary" disabled="disabled" onclick="hangup()" style="margin-bottom: 7px;display: none;">Hangup</button></center>
+                </div></br>
+                <div ng-app="myApp" ng-controller="namesCtrl" >
+                <form class="navbar-form" role="search" id="formang">
+                    <div class="input-group add-on">
+                      <input class="form-control"  ng-model="test.name" id="searchcontrol" type="text" placeholder="Search Users.." onkeydown="$('#otherClientsVid').css('display', 'none');">
+                      <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit" style="border: 1px solid transparent;border-radius: 4px;border-top-left-radius: 0px;border-bottom-left-radius: 0px;"><i class="glyphicon glyphicon-search"></i></button>
+                      </div>
+                    </div>
+                </form>
+                  <div ng-repeat="x in names | filter:test" id="anguse">         
+                    <a class="UsersActive" id="{{ x.id }}" onclick="flex(event);">{{ x.name}}</a>
+                  </div>
+                
+                <div id="otherClientsVid" style="display: none;">
+
+                <div class="UsersActive"></div>
+                </div>
+                </div>
+                <!--<button id="hangupButton" class="btn btn-primary" style="    position: absolute;
+    bottom: 120px;
+    margin-left: 80px;" disabled="disabled" onclick="hangup()">Hangup</button>-->
+            </div>
+        <div id="sendMessageArea" style="position: fixed; z-index: 0;" onload="connectnew();">
+            <div class="Messages" id="checking" style="position: fixed; bottom: 80px; background-color: gainsboro; width: 80%; right:0; height: auto; max-height: 80%;overflow-y: auto; word-wrap: break-word;word-break: break-word;padding: 20px; padding-bottom: 0px; z-index: 2;    color: #f05f40;font-size: 18px;">
+                <span id="text" style="overflow-y: hidden; "></span>
+                <span class="blinking-cursor" style="overflow-y: hidden;">|</span>
+            </div>
+          <div id="sendMessageText" onkeypress="if(event.keyCode == 13) { event.preventDefault();sendOnEnter();}" placeholder="Type in what to send" style="padding: 10px; z-index: 2;border: 0px; background:#fff;box-shadow: 8px 8px 8px 8px #F05F40; position: fixed;bottom: 0;height:60px;font-size:16px;width: 80%;right:0;border-radius: 10px;right: 0px;left:20%;" contenteditable></div>
+          <button type="button" class="btn btn-primary btn-xl page-scroll" id="SmileyButton" onkeypress="if(event.keyCode == 13) { event.preventDefault();sendOnEnter();}" style="right: 109px; position: fixed; z-index: 4; bottom: 7px;padding:0px;background-color: transparent;" data-toggle="modal" data-target="#myModal"><img class="icon icons8-Happy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAD90lEQVRoQ+1ZT0gUYRT/Pd1djYr8E1gX20BxT9ledqFDbRSll/6eulgRnSKxS12lW50k6lRQXSoiyrqEUbRCBLsE7tahlYQ0ElTQVhRyN/XFzKyaOt/Mm9lJM/yOM++9+f3ev+/73hDW+KI1jh/rBFY7gusRmIsA94SCyGMfwMdAVAFwBUC7jfecAigL5ixAnQigm8KZfi+iV3QEOBE6DeK2BbBSWJwCUwdFM/elGmZyrgnowIF2EILFAABDi0S7WyKOCeip8oufOfe4HU1OwU/HnaaWIwKcrN8NlLwFtBz/G0urkdn9FPmSkloXE+Bk6AyAu1LDRcqdpUjmnsSGiIDh+dIeiUHvZGbCkkjYEijkfM/fSxsVZc7CT2G7mrAnkGzQwBf6uXf+lVniFEV6w1aylgRWOO9VOC3rwZpAIvS16D4vc7VaitFP0cxOlYCSwD/i/TncyihYEFjN3F/qb3UtmBIwOg++Fht9T/X92GnWkcwJCDatj5kyxJMbMTjkw8+pUtQFc2jeO4n6YN4St1s9AKZpZE4g0dAJoqMqJBqIQd8lxI6cROJNF57evjUverFlVEnCrZ5xIufnFO09thSTKgJxQDvbm68b96vRevOd/nJsZBjt507NC9btyKP19Kipolu9grFuimRiQgLWBdx6dTtOnL+A6IEmxF88wcsHC0f6DeUzuHZ5xJSAWz3DmHkhqyLAVomsAVGt8rJZXL8yrCTgRm9OhyKZZXhdEdBSoW8gYIrFLoXc6DknkGhIgajRqojvPK4yfW1XxG70CkWcpmjvsjOZqyLWDOrtMLEJ34d8mMqVQPN8874JWRt1oQfAQRHbtFFPNyipMYdtdCVvX1IKDjayf/IoMVVJ4f6saB/Qu65NIUvd5okcs2kBa7b/3+O0EYVQPwg7pF58/fAbpn8xmlqWq0znZ/D60Xf4/ISDp2qlJgHGAEUzyuGZp1fKRNcQfgznEI5tRU3txkUgB/sm8en9KCpryhA9vE1OQHEKnd/c7Cw5qYWxoSkkXw3DFyDs2lONqm3l8AVKoYH//GEM03lG5FCN/ly0LHJfTsAYJWrT5S2Sj/als+hLj5sfMxq3oK5ROtTjcfhzQbPO86dx27GKXgsOB1taJL6ks5gYMy43m6sCqG+skHte1/JosDXHdoUv+d6OFhdI6MPduDSdJCm3WIbHgdmYZKQoroGlIIw/MaxdOZWnVefA9StjGoFczC7nxTuxHQg9pVj/wSHeJ0xtMgZAaJdOoz0jsKg2mNscR0TzOFGHW+CuU0gVmcIsKQYu/ORjrpgnZYA1fvIRdcKPuN3U2S4DPCcg/aDXcqJ9wOuPemlvnYCX3nRja81H4DexEM5Av72zBAAAAABJRU5ErkJggg==" width="48" height="48"></button>
+          <button class="btn btn-primary btn-xl page-scroll" id="SendButton" style="right: 0; position: fixed; z-index: 4; bottom: -3px;background-color: white;border-radius: 10px;border: 2px solid #F05F40;"><img class="icon icons8-Sent" src="send.png" width="40" height="40"></button>
+
+
+
+
+          <div id="otherClients" style="overflow-y:scroll;display: table; z-index: 0; position: relative; width: 100%;bottom: 150px;"></div>
+        </div>
+            <video autoplay="autoplay" class="easyrtcMirror" id="selfVideo" muted="muted" volume="0" ></video>
+            <div id="Vid">
+                <video autoplay="autoplay" id="callerVideo" style="background-color:gainsboro;display: none;" controls="true">
+                </video>
+            </div>
+        </div>
+
+        <div class="card" id="acceptCallBox" style="display: none; position: absolute; top: 50%; left: 50%; width: 20rem;">
+            <div class="card-block" style="background-color: #f05f40; border-radius: 4px; box-shadow: 10px 10px 5px #888888;">
+                <h4 class="card-title" style="text-align: center; background-color: white;">New Call</h4>
+                <p class="card-text"></p>
+                <div id="acceptCallLabel" style="padding-left: 8px; padding-bottom: 8px;">Accept incoming call from Km ?</div>
+                <button id="callAcceptButton" class="btn btn-default" style="margin-left: 25px;">Accept</button> 
+                <button id="callRejectButton" class="btn btn-danger">Reject</button>
+            </div>
+        </div>
+
+        <div class="card" id="callWaitingBox" style="display: none; position: absolute; top: 50%; left: 50%; width: 20rem;">
+            <div class="card-block" style="background-color: #f05f40; border-radius: 8px; box-shadow: 10px 10px 5px #888888;">
+                <h4 class="card-title" style="text-align: center; background-color: white;">Call Waiting</h4>
+                <p class="card-text"></p>
+                <div id="callWaitingLabel" style="padding-left: 8px; padding-bottom: 8px;">Waiting for peer to accept your call...</div>
+                <button id="callCancelButton" class="btn btn-danger" style="margin-left: 40px; margin-bottom: 5px">Cancel Call</button>
+            </div>
+        </div>
+
+
+          <!-- Modal -->
+            <div id="myModal" class="modal fade" role="dialog" style="z-index: 99999999999;">
+              <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Smileys</h4>
+                  </div>
+                  <div class="modal-body">
+                    <div class="col-lg-12" id="addSmiley">
+                    </div>
+                    
+            
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <!--Model Ends-->
+
+
+        <script type="text/javascript">
+
+// $('.Messages').on('scroll', function(){
+//     console.log(document.body.scrollHeight);
+//     console.log(document.body.scrollTop);
+
+//     console.log(document.getElementById('checking').scrollHeight);
+
+// });
+
+$(window).on('load', function(){
+    var i=0;
+    var j=0;
+    var val;
+    for(i=0;i<6;i++){
+        for(j=1;j<=11;j++){
+            val=11*i+j;
+        var test="<img class='smiley' data-dismiss='modal'  title='"+val+"' style='width:7%' src='smiley/Emoji Smiley-"+val+".png'>";
+        $('#addSmiley').append(test);
+        //console.log(test);
+        }
+        var gbreak="<br>";
+        $('#addSmiley').append(gbreak);
+        //console.log(gbreak);
+    }
+
+    $('#otherClientsVid').css('display', 'none');
+
+
+
+
+
+});
+    
+    $(document).ready(function()
+    {
+    $(document).on("click",".smiley",function(){
+            smile_num=$(this).attr('title');
+
+            var input_field = $('#sendMessageText');
+            var smile="<img style='width:2%' src='smiley/Emoji Smiley-"+smile_num+".png'>";
+            
+            var val=input_field.html() +"<img style='width:7%' src='smiley/Emoji Smiley-"+smile_num+".png'>";
+            input_field.html(input_field.html() +"<img style='width:25px' src='smiley/Emoji Smiley-"+smile_num+".png'>" );
+            elem = document.getElementById('sendMessageText');
+            //setEndOfContenteditable(elem);
+        });
+    });
+
+    function checkSmiley(event){
+        if(event.keyCode==9){
+            console.log("Hello Nerdy!!");
+            $('#myModal').modal('show'); 
+        }
+    }
+</script>
+    </body>
+</html>
+
+<!-- Brand and toggle get grouped for better mobile display -->
+                <!--
+                <div class="navbar-header" >
+                <button id="m" type="button" style="align-self: left" class="navbar-toggle  " data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1">
+                <img src="navbarlogoblack.png" alt="Mountain View" style="width:70px;height:20px" >
+                </button>
+                    <button id="main" type="button" class="navbar-toggle collapsed" data-toggle="collapse" onmouseover="openNav();" onclick="closeNav();"" data-target="#bs-example-navbar-collapse-1">
+                        <span class="sr-only" ">Toggle navigation</span> Menu <i class="fa fa-bars"></i>
+                    </button>
+                </div>
+                 Collect the nav links, forms, and other content for toggling -->
+
+

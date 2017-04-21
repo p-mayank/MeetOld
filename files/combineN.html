@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+  	<head>
+  	 <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Meet</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href="vendor/font-awesome/css/font-awe.min.css" rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
+
+    <!-- Theme CSS -->
+    <link href="css/creative.min.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+	    <!-- Assumes global locations for socket.io.js and easyrtc.js -->
+	    <script src="/socket.io/socket.io.js"></script>
+	    <script type="text/javascript" src="/easyrtc/easyrtc.js"></script>
+	    <script type="text/javascript" src="updateN.js"></script>
+	    <script type="text/javascript" src="js/w3.js"></script>
+<script type="text/javascript">
+    function replaceContentInContainer(target, source) {
+    	var username = document.getElementById("userNameField").value;
+	  if (username) {
+	    easyrtc.setUsername(username);
+	  }
+	   	document.getElementById(target).innerHTML = document.getElementById(source).innerHTML;
+	  easyrtc.setVideoDims(640,480);
+	  easyrtc.setRoomOccupantListener(convertListToButtons);
+	  easyrtc.easyApp("easyrtc.audioVideoSimple", "selfVideo", ["callerVideo"], loginSuccess, loginFailure);
+	  easyrtc.setPeerListener(addToConversation);
+	    easyrtc.connect("easyrtc.instantMessaging", loginSuccess, loginFailure);
+    }
+    function replaceContentInOtherContainer(replace_target, source){
+        document.getElementById(replace_target).style.display = "none";
+        document.getElementById(source).style.display = "block";
+    }
+</script>
+<script>
+$(document).ready(function () {
+  var trigger = $('.hamburger'),
+      overlay = $('.overlay'),
+     isClosed = false;
+
+    trigger.click(function () {
+      hamburger_cross();      
+    });
+
+    function hamburger_cross() {
+
+      if (isClosed == true) {          
+        overlay.hide();
+        trigger.removeClass('is-open');
+        trigger.addClass('is-closed');
+        isClosed = false;
+      } else {   
+        overlay.show();
+        trigger.removeClass('is-closed');
+        trigger.addClass('is-open');
+        isClosed = true;
+      }
+  }
+  
+  $('[data-toggle="offcanvas"]').click(function () {
+        $('#wrapper').toggleClass('toggled');
+  });  
+});
+</script>
+	    <style type="text/css">
+	    	#demoContainer {
+			    width: 100%;
+			    position:relative;
+			    display: table;
+			    text-align: center;
+                box-shadow: 0px 0px 10px 0px black;
+			}
+			#connectControls {
+			    margin-left: 35%;
+			    margin-right: 35%;
+			    width:30%;
+			    text-align:center;
+			}
+			#otherClients {
+			    overflow-y:scroll;
+			}
+			#callerVideo {
+			    width:30%;
+                height: 30%; 
+                background-color: white;
+                z-index: 1;
+                position: fixed;
+                right: 0; top: 80px;
+                border:0px;
+			}
+
+			#selfVideo {
+			    width:15%;
+			    height: 15%; 
+                background-color: white;
+                z-index: 2;
+                position: fixed;
+                right: 0; bottom: 120px;
+                border:0px;
+                display: none;
+			}
+	    	.conversation {
+			    border:solid 1px gray;
+			    overflow-y:scroll;
+			    word-wrap: break-word;
+			    margin: 2px;
+			    width: 100%;
+			    height: 80%;
+			}
+
+            .sendbutton {   
+                border-radius: 10px;
+                background-color: #F05F40;
+                width: 100%; 
+                height: 20%;
+            }
+
+            .convcontainer{
+                margin: 1.66%;
+                float: left;
+                width: 30%; 
+                height: 300px;
+            }
+            .UsersActive {
+                background-color: white;
+                width: 100%;
+                font-size: 20px;
+                border: 0px;
+                transition: all .2s ease-in-out;
+            }
+
+            .UserActive:hover, .UserActive:focus {
+                background-color: green;
+            }
+
+            .activechat{
+                color: green;
+            }
+            #iam {
+                font-size: 30px;
+                padding: 20px;
+                color: white;
+            }
+            #me {
+                margin-top:  -8px;
+                background-color: grey;
+                box-shadow: outset 0px 0px 5px 0px black;
+                text-overflow: scroll;
+            }
+	    </style>
+	</head>
+	<body id="page-top" class="bk" style="z-index: 0;">
+        <div style="vertical-align: middle;">
+        <center>
+            <div class="header-content" id="target">
+          <img src="meet-05.png" height="300px" width="300px">
+          <div class="header-content-inner">
+            <h1 id="homeHeading" class="text-faded">Enter Your Name</h1>
+            <hr>
+            <input type="text" style="width: 50%" id="userNameField" placeholder="Name" class = "form-control" onkeypress="return searchKeyPress(event);" autofocus></input>
+            <br>
+            <button class="btn btn-primary btn-xl page-scroll" onclick="connect();">Start Chatting</button>
+          </div>
+        </div>
+        </center>
+        </span>
+		
+        <div id="vc" style="display: none;">
+        
+        
+        </div>
+        <div id="tc" style="display: none;">
+        <nav id="mainNav" class="navbar navbar-default navbar-fixed-top">
+            <div class="container-fluid">
+                <!-- Brand and toggle get grouped for better mobile display -->
+                <div class="navbar-header" >
+                <button id="m" type="button" style="align-self: left" class="navbar-toggle  " data-toggle="collapse"  data-target="#bs-example-navbar-collapse-1">
+                <img src="navbarlogoblack.png" alt="Mountain View" style="width:70px;height:20px" >
+                </button>
+                <div id="page-content-wrapper">
+          <button type="button" class="hamburger is-closed animated fadeInLeft" data-toggle="offcanvas">
+            <span class="hamb-top"></span>
+            <span class="hamb-middle"></span>
+            <span class="hamb-bottom"></span>
+          </button>
+        </div>
+                </div>
+
+                <!-- Collect the nav links, forms, and other content for toggling -->
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav navbar-right">
+                     <li>
+                            <a class="page-scroll" href="combineN.html"><img src="navbarlogo.png" alt="Mountain View" style="width:70px;height:20px" ></a>
+                        </li>
+                       
+                    </ul>
+                </div>
+                <!-- /.navbar-collapse -->
+            </div>
+            <!-- /.container-fluid -->
+        </nav>
+        <nav class="navbar navbar-inverse navbar-fixed-top" id="sidebar-wrapper" role="navigation">
+            
+        </nav>
+        <div id="mySidenav" class="sidenav">
+        <div id="me">
+                <center>I AM<br>
+                <i id="iam">Not yet connected...</i></center>
+                </div>
+                <center>Users Active</center>
+                <div id="otherClientsVid"></div>
+            </div>
+        <div id="sendMessageArea" style="position: fixed; z-index: 0;" onload="connectnew();">
+            <div class="Messages" style="position: fixed; bottom: 120px; background-color: white; width: 80%; right:0; height: auto; max-height: 80%;overflow-y: scroll; word-wrap: break-word; padding: 20px; padding-bottom: 0px; z-index: 2;">
+            Please choose a user from the list to chat
+            </div>
+
+          <textarea id="sendMessageText" placeholder="Type in what to send" style="padding: 10px; z-index: 2;border: 0px; background:#fff;box-shadow: 8px 8px 8px 8px #F05F40; position: fixed;bottom: 0;height:100px;font-size:20px;width: 80%;right:0;"></textarea>
+          <button class="btn btn-primary btn-xl page-scroll" id="SendButton" style="right: 0; position: fixed; z-index: 4; bottom: 50px;">Send</button>
+          <button class="btn btn-primary btn-xl page-scroll" id="CallButton" style="right: 0; position: fixed; z-index: 4; bottom: 0px;">Call</button>
+          <div id="otherClients" style="overflow-y:scroll;display: table; z-index: 0; position: relative; width: 100%;bottom: 150px;"></div>
+        </div>
+            <video autoplay="autoplay" class="easyrtcMirror" id="selfVideo" muted="muted" volume="0" ></video>
+            <div id="Vid">
+            <video autoplay="autoplay" id="callerVideo"></video>
+            <button class="btn btn-primary btn-xl page-scroll" id="CallButton" style="right: 10px; position: fixed; z-index: 4; top: 60px; padding: 10px; height: 40px; width: 40px; background-color: red;" onclick="easyrtc.hangupAll();">X</button>
+
+            <!-- each caller video needs to be in it"s own div so it"s close button can be positioned correctly -->
+            </div>
+        </div>
+    </body>
+</html>
